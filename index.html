@@ -92,13 +92,16 @@ function field(l,n,v='',full=false,ta=false){
     }
   </div>`
 }
-function classCard(c){let s=cs(c),p=s.reduce((a,x)=>a+pts(x.id),0);return`<div class="card"><h3>🌤️ ${esc(c.name)}</h3><span class="tag">Khối ${c.grade}</span><span class="tag">${esc(c.year)}</span><p class="muted">${esc(c.desc||'')}</p><div class="mini"><div><b>${s.length}</b>HS</div><div><b>${p}</b>⭐</div><div><b>${db.assignments.filter(a=>a.classId===c.id).length}</b>bài</div></div><button class="btn primary small" onclick="openClass('${c.id}')">Mở lớp →</button></div>`}
+function classCard(c){let s=cs(c),p=s.reduce((a,x)=>a+pts(x.id),0);return`<div class="card"><h3>🌤️ ${esc(c.name)}</h3><span class="tag">Khối ${c.grade}</span><span class="tag">${esc(c.year)}</span><p class="muted">${esc(c.desc||'')}</p><div class="mini"><div><b>${s.length}</b>HS</div><div><b>${p}</b>⭐</div><div><b>${db.assignments.filter(a=>a.classId===c.id).length}</b>bài</div></div><div class="actions">
+  <button class="btn primary small" onclick="openClass('${c.id}')">Mở lớp →</button>
+  <button class="btn red small" onclick="deleteClass('${c.id}')">🗑️ Xóa</button>
+</div></div>`}
 function home(){let fee=db.sessions.reduce((a,x)=>a+x.fee,0),paid=db.sessions.reduce((a,x)=>a+x.paid,0);document.getElementById('home').innerHTML=`<div class="hero"><div class="sun">☀️</div><h1>Xin chào, ${esc(db.settings.name)}! 👋</h1><p>Quản lý dạy và học Tiếng Việt cho giáo viên, gia sư, phụ huynh và học sinh.</p></div><div class="grid stats">${st('👩‍🎓',db.students.length,'Học sinh')}${st('🏫',db.classes.length,'Lớp')}${st('📝',db.assignments.length,'Bài tập')}${st('📅',db.sessions.length,'Buổi học')}${st('💰',money(fee-paid),'Còn thu')}</div><div class="card"><h3>⚡ Thao tác nhanh</h3><div class="actions"><button class="btn primary" onclick="studentM()">➕ Học sinh</button><button class="btn soft" onclick="materialM()">📚 Học liệu</button><button class="btn mint" onclick="assignmentM()">📝 Giao bài</button><button class="btn yellow" onclick="sessionM()">💰 Buổi học</button></div></div><div class="section"><h2>🏫 Lớp học</h2><button class="btn soft small" onclick="go('classes')">Xem tất cả →</button></div><div class="grid cards">${db.classes.map(classCard).join('')}</div>`}
 function classes(){let q=document.getElementById('cq')?.value?.toLowerCase()||'',ls=db.classes.filter(c=>(c.name+c.grade+c.teacher).toLowerCase().includes(q));document.getElementById('classes').innerHTML=`<div class="section"><div><h2>🏫 Lớp học</h2><span class="muted">Quản lý lớp kiểu ClassDojo.</span></div><button class="btn primary" onclick="classM()">➕ Tạo lớp</button></div><div class="toolbar"><div class="search"><span>🔎</span><input id="cq" value="${esc(q)}" placeholder="Tìm lớp..." oninput="classes()"></div></div><div class="grid cards">${ls.map(classCard).join('')||'<div class="empty">Không tìm thấy.</div>'}</div>`}
 function classM(id){let c=id?cl(id):null;modal(id?'✏️ Sửa lớp':'➕ Tạo lớp',`<form onsubmit="saveClass(event,'${id||''}')"><div class="form">${field('Tên lớp','name',c?.name||'4A2')}${field('Khối','grade',c?.grade||'4')}${field('Năm học','year',c?.year||db.settings.year)}${field('Giáo viên/Gia sư','teacher',c?.teacher||db.settings.name)}${field('Mô tả','desc',c?.desc||'',true,true)}</div><div class="modal-foot"><button type="button" class="btn gray" onclick="closeM()">Hủy</button><button class="btn primary">Lưu</button></div></form>`)}
 function saveClass(e,id){e.preventDefault();let f=new FormData(e.target);if(id)Object.assign(cl(id),{name:f.get('name'),grade:f.get('grade'),year:f.get('year'),teacher:f.get('teacher'),desc:f.get('desc')});else db.classes.push({id:uid(),name:f.get('name'),grade:f.get('grade'),year:f.get('year'),teacher:f.get('teacher'),desc:f.get('desc'),studentIds:[]});save();closeM();render();toast('Đã lưu lớp')}
 function openClass(id){let c=cl(id);document.getElementById('classes').innerHTML=`<div class="section"><div><button class="btn soft small" onclick="classes()">← Quay lại</button><h2>🌤️ ${esc(c.name)}</h2></div><div class="actions"><button class="btn primary" onclick="studentM('${id}')">➕ Học sinh</button><button class="btn gray" onclick="classM('${id}')">✏️</button></div></div><div class="grid stats">${st('👩‍🎓',cs(c).length,'Học sinh')}${st('⭐',cs(c).reduce((a,s)=>a+pts(s.id),0),'Điểm')}${st('📝',db.assignments.filter(a=>a.classId===id).length,'Bài tập')}${st('📅',db.attendance.filter(a=>a.classId===id&&a.date===today()&&a.status==='present').length,'Có mặt')}${st('🏆',db.badges.filter(b=>b.classId===id).length,'Huy hiệu')}</div><div class="card" style="margin-top:15px"><h3>⭐ Bảng thành tích</h3>${cs(c).sort((a,b)=>pts(b.id)-pts(a.id)).map(s=>`<div class="row"><div class="person"><div class="avatar">${s.avatar}</div><div><b>${esc(s.name)}</b><div class="muted">${ar(s.id)}% chuyên cần</div></div></div><b>⭐ ${pts(s.id)}</b></div>`).join('')}</div>`}
-function students(){let q=document.getElementById('sq')?.value?.toLowerCase()||'',ls=db.students.filter(s=>(s.name+s.grade+s.parent).toLowerCase().includes(q));document.getElementById('students').innerHTML=`<div class="section"><h2>👩‍🎓 Học sinh</h2><div class="actions"><button class="btn primary" onclick="studentM()">➕ Thêm</button><button class="btn mint" onclick="importX()">📥 Nhập Excel</button><button class="btn soft" onclick="exportX()">📤 Xuất Excel</button></div></div><div class="toolbar"><div class="search"><span>🔎</span><input id="sq" value="${esc(q)}" placeholder="Tìm học sinh..." oninput="students()"></div></div><div class="list">${ls.map(s=>`<div class="row"><div class="person"><div class="avatar">${s.avatar}</div><div><b>${esc(s.name)}</b><div class="muted">Khối ${s.grade} • ⭐ ${pts(s.id)} • ${ar(s.id)}% chuyên cần</div></div></div><div class="actions"><button class="btn soft small" onclick="profile('${s.id}')">Xem</button><button class="btn gray small" onclick="studentM('${s.id}')">✏️</button></div></div>`).join('')||'<div class="empty">Không tìm thấy.</div>'}</div>`}
+function students(){let q=document.getElementById('sq')?.value?.toLowerCase()||'',ls=db.students.filter(s=>(s.name+s.grade+s.parent).toLowerCase().includes(q));document.getElementById('students').innerHTML=`<div class="section"><h2>👩‍🎓 Học sinh</h2><div class="actions"><button class="btn primary" onclick="studentM()">➕ Thêm</button><button class="btn mint" onclick="importX()">📥 Nhập Excel</button><button class="btn soft" onclick="exportX()">📤 Xuất Excel</button></div></div><div class="toolbar"><div class="search"><span>🔎</span><input id="sq" value="${esc(q)}" placeholder="Tìm học sinh..." oninput="students()"></div></div><div class="list">${ls.map(s=>`<div class="row"><div class="person"><div class="avatar">${s.avatar}</div><div><b>${esc(s.name)}</b><div class="muted">Khối ${s.grade} • ⭐ ${pts(s.id)} • ${ar(s.id)}% chuyên cần</div></div></div><div class="actions"><button class="btn soft small" onclick="profile('${s.id}')">Xem</button><button class="btn gray small" onclick="studentM('${s.id}')">✏️</button> <button class="btn red small" onclick="deleteStudent('${s.id}')">🗑️ Xóa</button></div></div>`).join('')||'<div class="empty">Không tìm thấy.</div>'}</div>`}
 function studentM(id='',cid=''){let s=id?stu(id):null;modal(s?'✏️ Sửa học sinh':'➕ Thêm học sinh',`<form onsubmit="saveStudent(event,'${id}')"><div class="form">${field('Họ tên','name',s?.name||'Nguyễn Văn A')}${field('Khối','grade',s?.grade||'4')}${field('Số điện thoại','phone',s?.phone||'')}${field('Phụ huynh','parent',s?.parent||'')}${field('Ghi chú','note',s?.note||'',true,true)}<div class="field"><label>Lớp</label><select name="classId"><option value="">-- Không chọn --</option>${db.classes.map(c=>`<option value="${c.id}" ${c.id===cid||s?.classIds?.includes(c.id)?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="field"><label>Avatar</label><select name="avatar">${avs.map(a=>`<option ${a===(s?.avatar||avs[0])?'selected':''}>${a}</option>`).join('')}</select></div></div><div class="modal-foot"><button type="button" class="btn gray" onclick="closeM()">Hủy</button><button class="btn primary">Lưu</button></div></form>`)}
 function saveStudent(e,id){e.preventDefault();let f=new FormData(e.target),cid=f.get('classId');if(id){let s=stu(id);Object.assign(s,{name:f.get('name'),grade:f.get('grade'),phone:f.get('phone'),parent:f.get('parent'),note:f.get('note'),avatar:f.get('avatar')})}else{let s={id:uid(),name:f.get('name'),grade:f.get('grade'),phone:f.get('phone'),parent:f.get('parent'),note:f.get('note'),avatar:f.get('avatar'),classIds:cid?[cid]:[]};db.students.push(s);if(cid)cl(cid).studentIds.push(s.id)}save();closeM();render();toast('Đã lưu học sinh')}
 function profile(id){let s=stu(id);modal('👩‍🎓 '+esc(s.name),`<div class="person"><div class="avatar" style="width:60px;height:60px;font-size:32px">${s.avatar}</div><div><h2 style="margin:0">${esc(s.name)}</h2><div class="muted">⭐ ${pts(id)} • ${ar(id)}% chuyên cần</div></div></div><div class="actions" style="margin:14px 0"><button class="btn primary" onclick="closeM();pointM('','${id}')">⭐ Điểm</button><button class="btn yellow" onclick="closeM();sessionM('${id}')">💰 Buổi học</button><button class="btn gray" onclick="closeM();studentM('${id}')">✏️ Sửa</button></div><h3>💬 Nhận xét gần đây</h3>${db.comments.filter(x=>x.studentId===id).slice().reverse().map(x=>`<div class="card" style="margin:7px 0"><b>${dvn(x.date)}</b><p>${esc(x.teacherNote||x.strengths||'')}</p></div>`).join('')||'<div class="empty">Chưa có.</div>'}`)}
@@ -404,6 +407,71 @@ function settings(){document.getElementById('settings').innerHTML=`<div class="s
 function saveSet(e){e.preventDefault();let f=new FormData(e.target);db.settings.name=f.get('name');db.settings.year=f.get('year');save();render();toast('Đã lưu')}
 function roleModal(){if(!role){loginModal(true);return;}modal('👤 Vai trò hiện tại',`<div class="rolegrid"><div class="rolecard active"><div class="roleicon">${role==='teacher'?'👩‍🏫':role==='tutor'?'👨‍🏫':role==='parent'?'👨‍👩‍👧':'👧'}</div><b>${roles[role]}</b><div class="muted">${session?.email||''}</div></div></div><p class="muted" style="margin-top:12px">Muốn đổi vai trò, hãy bấm Đăng xuất rồi đăng nhập bằng tài khoản khác.</p>`)}function setRole(r){if(!r)return;role=r;session={...(session||{}),role:r};sessionStorage.setItem('vp_session',JSON.stringify(session));roleText.textContent=roles[r];closeM();render();toast('Vai trò: '+roles[r])}
 function del(c,id){if(confirm('Xóa mục này?')){db[c]=db[c].filter(x=>x.id!==id);save();render();toast('Đã xóa')}}function exportJSON(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.download='vietpath-backup.json';a.click()}function importJSON(){let i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{let r=new FileReader;r.onload=()=>{try{db=JSON.parse(r.result);save();render();toast('Đã khôi phục')}catch{alert('JSON không hợp lệ')}};r.readAsText(i.files[0])};i.click()}function resetData(){if(confirm('Xóa dữ liệu hiện tại và tạo dữ liệu mẫu?')){db=seed();save();render();toast('Đã reset')}}
+  function deleteClass(id){
+  const c=cl(id);
+  if(!c)return;
+
+  if(!confirm(`Bạn có chắc muốn xóa lớp "${c.name}" không?\n\nHọc sinh trong lớp sẽ KHÔNG bị xóa.`))return;
+
+  // Bỏ liên kết lớp khỏi học sinh
+  db.students.forEach(s=>{
+    s.classIds=(s.classIds||[]).filter(x=>x!==id);
+  });
+
+  // Xóa lớp
+  db.classes=db.classes.filter(x=>x.id!==id);
+
+  // Xóa dữ liệu riêng của lớp
+  db.attendance=db.attendance.filter(x=>x.classId!==id);
+  db.points=db.points.filter(x=>x.classId!==id);
+  db.sessions=db.sessions.filter(x=>x.classId!==id);
+  db.events=db.events.filter(x=>x.classId!==id);
+
+  // Xóa bài tập giao cho lớp này
+  db.assignments=db.assignments.filter(x=>!(
+    x.target==='class' && x.targetId===id
+  ));
+
+  save();
+  closeM();
+  render();
+  go('classes');
+  toast('🗑️ Đã xóa lớp');
+}
+  function deleteStudent(id){
+  const s=stu(id);
+  if(!s)return;
+
+  if(!confirm(`Bạn có chắc muốn xóa học sinh "${s.name}" không?\n\nToàn bộ dữ liệu liên quan đến học sinh này sẽ được xóa.`))return;
+
+  // Bỏ học sinh khỏi tất cả các lớp
+  db.classes.forEach(c=>{
+    c.studentIds=(c.studentIds||[]).filter(x=>x!==id);
+  });
+
+  // Xóa học sinh
+  db.students=db.students.filter(x=>x.id!==id);
+
+  // Xóa dữ liệu liên quan
+  db.attendance=db.attendance.filter(x=>x.studentId!==id);
+  db.points=db.points.filter(x=>x.studentId!==id);
+  db.badges=db.badges.filter(x=>x.studentId!==id);
+  db.sessions=db.sessions.filter(x=>x.studentId!==id);
+  db.comments=db.comments.filter(x=>x.studentId!==id);
+  db.submissions=db.submissions.filter(x=>x.studentId!==id);
+  db.events=db.events.filter(x=>x.studentId!==id);
+
+  // Xóa bài tập giao riêng cho học sinh
+  db.assignments=db.assignments.filter(x=>!(
+    x.target==='student' && x.targetId===id
+  ));
+
+  save();
+  closeM();
+  render();
+  go('students');
+  toast('🗑️ Đã xóa học sinh');
+}
 function exportX(){if(!window.XLSX)return alert('Cần Internet để dùng Excel.');let wb=XLSX.utils.book_new();let hs=db.students.map(s=>({'Họ tên':s.name,'Khối':s.grade,'Lớp':s.classIds.map(i=>cl(i)?.name||'').join(', '),'SĐT':s.phone,'Phụ huynh':s.parent,'Điểm':pts(s.id),'Chuyên cần':ar(s.id)}));let dd=db.attendance.map(a=>({'Ngày':a.date,'Học sinh':stu(a.studentId)?.name||'','Lớp':cl(a.classId)?.name||'','Trạng thái':a.status,'Ghi chú':a.note}));let hp=db.sessions.map(s=>({'Ngày':s.date,'Học sinh':stu(s.studentId)?.name||'','Nội dung':s.topic,'Phút':s.minutes,'Học phí':s.fee,'Đã thu':s.paid,'Còn':s.fee-s.paid}));[['Học sinh',hs],['Điểm danh',dd],['Học phí',hp]].forEach(([n,d])=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),n));XLSX.writeFile(wb,'VietPath.xlsx')}
 function importX(){if(!window.XLSX)return alert('Cần Internet để dùng Excel.');let i=document.createElement('input');i.type='file';i.accept='.xlsx,.xls,.csv';i.onchange=()=>{let r=new FileReader;r.onload=e=>{let wb=XLSX.read(e.target.result,{type:'array'}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]),n=0;rows.forEach(x=>{let name=x['Họ tên']||x['Tên'];if(!name)return;let cn=x['Lớp']||'',c=db.classes.find(c=>c.name===cn);if(cn&&!c){c={id:uid(),name:cn,grade:String(x['Khối']||''),year:x['Năm học']||db.settings.year,teacher:db.settings.name,desc:'',studentIds:[]};db.classes.push(c)}let s={id:uid(),name:String(name),grade:String(x['Khối']||c?.grade||''),avatar:avs[n%avs.length],phone:String(x['SĐT']||''),parent:String(x['Phụ huynh']||''),note:String(x['Ghi chú']||''),classIds:c?[c.id]:[]};db.students.push(s);if(c)c.studentIds.push(s.id);n++});save();render();toast('Đã nhập '+n+' học sinh')};r.readAsArrayBuffer(i.files[0])};i.click()}
 function templateX(){let wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet([{'Họ tên':'Nguyễn Văn A','Khối':'4','Lớp':'4A1','Năm học':'2026–2027','SĐT':'','Phụ huynh':'','Ghi chú':''}]);XLSX.utils.book_append_sheet(wb,ws,'Học sinh');XLSX.writeFile(wb,'Mau-VietPath.xlsx')}
