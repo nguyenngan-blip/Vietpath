@@ -31,13 +31,13 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:fle
 <div class="app">
 <aside class="sidebar" id="side">
 <div class="brand"><div class="logo">🌤️</div>VietPath</div>
-<div class="role">Vai trò: <b id="roleText">Gia sư</b></div>
+<div class="role">Vai trò: <b id="roleText">Chưa đăng nhập</b></div>
 <nav class="nav">
 <button data-p="home">🏠 Tổng quan</button><button data-p="classes">🏫 Lớp học</button><button data-p="students">👩‍🎓 Học sinh</button><button data-p="materials">📚 Kho học liệu</button><button data-p="assignments">📝 Bài tập</button><button data-p="attendance">📅 Điểm danh</button><button data-p="points">⭐ Điểm thưởng</button><button data-p="badges">🏆 Thành tích</button><button data-p="stats">📊 Thống kê</button><button data-p="calendar">📆 Lịch</button><button data-p="tools">🛠️ Công cụ</button><button data-p="practice">🎯 Luyện tập</button><button data-p="tutor">💼 Gia sư & học phí</button><button data-p="comments">💬 Nhận xét & tin nhắn</button><button data-p="notifications">🔔 Thông báo</button><button data-p="settings">⚙️ Cài đặt</button>
 </nav>
 </aside>
 <main class="main">
-<header class="top"><div style="display:flex;align-items:center;gap:10px"><button class="mobile" id="mobile">☰</button><b id="title">Tổng quan</b></div><div><button class="btn soft small" id="install" style="display:none">📲 Cài app</button><button class="btn gray small" onclick="loginModal()">🔐 Tài khoản</button><button class="btn gray small" onclick="roleModal()">👤 Vai trò</button></div></header>
+<header class="top"><div style="display:flex;align-items:center;gap:10px"><button class="mobile" id="mobile">☰</button><b id="title">Tổng quan</b></div><div><button class="btn soft small" id="install" style="display:none">📲 Cài app</button><button class="btn gray small" onclick="loginModal()">🔐 Tài khoản</button><button class="btn gray small" onclick="logout()">🚪 Đăng xuất</button></div></header>
 <div class="container">
 <section id="home" class="page active"></section><section id="classes" class="page"></section><section id="students" class="page"></section><section id="materials" class="page"></section><section id="assignments" class="page"></section><section id="attendance" class="page"></section><section id="points" class="page"></section><section id="badges" class="page"></section><section id="stats" class="page"></section><section id="calendar" class="page"></section><section id="tools" class="page"></section><section id="practice" class="page"></section><section id="tutor" class="page"></section><section id="comments" class="page"></section><section id="notifications" class="page"></section><section id="settings" class="page"></section>
 </div></main></div>
@@ -45,7 +45,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:fle
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 const K='vietpath_complete_v2',roles={teacher:'Giáo viên',tutor:'Gia sư',parent:'Phụ huynh',student:'Học sinh'},cats=['Đọc hiểu','Chính tả','Từ và câu','Viết','Luyện tập','Ôn tập','Khác'],avs=['🐰','🦊','🐼','🐯','🐨','🐸','🐱','🐶','🦄','🐻','🐹','🐧'];
-let role=localStorage.getItem('vp_role')||'tutor',page='home',deferInstall=null,timer={base:300,left:300,id:null};
+let session=null;try{session=JSON.parse(sessionStorage.getItem('vp_session')||'null')}catch(e){session=null}let role=session?.role||null,page='home',deferInstall=null,timer={base:300,left:300,id:null};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7),today=()=>new Date().toISOString().slice(0,10),money=n=>new Intl.NumberFormat('vi-VN').format(n||0)+'đ',esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])),dvn=s=>s?new Date(s).toLocaleDateString('vi-VN'):'';
 function seed(){let c={id:uid(),name:'4A1',grade:'4',year:'2026–2027',teacher:'Ngân Nguyễn',desc:'Lớp Tiếng Việt vui vẻ',studentIds:[]};let names=['Minh Anh','Hoàng Nam','Lan Anh','Đức Minh','Khánh Linh'];let ss=names.map((n,i)=>({id:uid(),name:n,grade:'4',avatar:avs[i],phone:'',parent:'',note:'',classIds:[c.id]}));c.studentIds=ss.map(x=>x.id);return{classes:[c],students:ss,materials:[{id:uid(),title:'Phiếu đọc hiểu Người mẹ',cat:'Đọc hiểu',type:'internal',content:'Đọc văn bản và trả lời câu hỏi.',url:'',fileName:'',fileData:'',size:0},{id:uid(),title:'Video đọc diễn cảm',cat:'Đọc hiểu',type:'youtube',content:'',url:'https://www.youtube.com/',fileName:'',fileData:'',size:0}],assignments:[],attendance:ss.map(s=>({id:uid(),classId:c.id,studentId:s.id,date:today(),status:'present',note:''})),points:ss.map((s,i)=>({id:uid(),classId:c.id,studentId:s.id,n:i?3:5,reason:'Khởi động tốt',type:'positive'})),badges:[],sessions:[{id:uid(),date:today(),studentId:ss[0].id,minutes:90,fee:150000,paid:150000,topic:'Đọc hiểu',note:'Buổi mẫu',classId:c.id}],comments:[],settings:{name:'Ngân Nguyễn',year:'2026–2027'}}}
 let db;try{db=JSON.parse(localStorage.getItem(K))||seed()}catch(e){db=seed()}function save(){localStorage.setItem(K,JSON.stringify(db))}ensureExtras();
@@ -70,7 +70,6 @@ function ensureExtras(){
     {id:'student01',name:'Học sinh',email:'student@vietpath.vn',role:'student'}
   ];
   db.settings=db.settings||{};
-  db.settings.loggedIn=db.settings.loggedIn!==false;
   save();
 }
 
@@ -94,7 +93,6 @@ function ensureExtras(){
     {id:'student01',name:'Học sinh',email:'student@vietpath.vn',role:'student'}
   ];
   db.settings=db.settings||{};
-  db.settings.loggedIn=db.settings.loggedIn!==false;
   save();
 }
 
@@ -235,22 +233,32 @@ function saveMessage(e){
   db.notifications.unshift({id:uid(),title:'Tin nhắn mới',body:`${roles[role]} đã gửi một tin nhắn.`,date:today(),read:false,type:'message'});
   save();closeM();render();go('comments');toast('Đã gửi tin nhắn');
 }
-function loginModal(){
-  modal('🔐 Tài khoản',`<form onsubmit="loginDemo(event)"><div class="notice">Bản hiện tại mô phỏng đăng nhập trên thiết bị. Khi nối Firebase/Supabase có thể dùng tài khoản thật và đồng bộ nhiều thiết bị.</div><div class="form">${field('Email','email',db.settings.email||'teacher@vietpath.vn')}${field('Mật khẩu','password','123456')}</div><div class="modal-foot"><button type="button" class="btn gray" onclick="closeM()">Đóng</button><button class="btn primary">Đăng nhập</button></div></form>`);
+function loginModal(force=false){
+  const current=session?.email||'';
+  modal('🔐 Đăng nhập VietPath',`<form onsubmit="loginDemo(event)"><div class="notice"><b>Đây là bản đăng nhập trên thiết bị.</b><br>Chọn tài khoản demo để thử đúng giao diện của từng vai trò. Dữ liệu vẫn lưu trên thiết bị này; khi nối Firebase/Supabase mới có tài khoản thật và đồng bộ nhiều thiết bị.</div><div class="form">${field('Email','email',current||'')} ${field('Mật khẩu','password','')}<div class="field full"><label>Chọn nhanh vai trò</label><select id="loginRole" onchange="fillDemoAccount(this.value)"><option value="">-- Chọn tài khoản --</option><option value="teacher">👩‍🏫 Giáo viên — teacher@vietpath.vn</option><option value="tutor">👨‍🏫 Gia sư — tutor@vietpath.vn</option><option value="parent">👨‍👩‍👧 Phụ huynh — parent@vietpath.vn</option><option value="student">👧 Học sinh — student@vietpath.vn</option></select></div></div><p class="muted">Mật khẩu demo cho cả 4 tài khoản: <b>123456</b></p><div class="modal-foot">${force?'':'<button type="button" class="btn gray" onclick="closeM()">Đóng</button>'}<button class="btn primary">Đăng nhập</button></div></form>`);
+}
+function fillDemoAccount(r){
+  const email={teacher:'teacher@vietpath.vn',tutor:'tutor@vietpath.vn',parent:'parent@vietpath.vn',student:'student@vietpath.vn'}[r]||'';
+  const inputs=document.querySelectorAll('#modal input');if(inputs[0])inputs[0].value=email;if(inputs[1])inputs[1].value=email?'123456':'';
 }
 function loginDemo(e){
-  e.preventDefault();let f=new FormData(e.target);
-  db.settings.loggedIn=true;db.settings.email=f.get('email');save();closeM();toast('Đăng nhập thành công');
+  e.preventDefault();let f=new FormData(e.target),email=String(f.get('email')||'').trim().toLowerCase(),password=String(f.get('password')||'');
+  const user=db.users.find(u=>u.email.toLowerCase()===email);
+  if(!user||password!=='123456'){alert('Email hoặc mật khẩu chưa đúng. Hãy chọn một tài khoản demo hoặc dùng mật khẩu 123456.');return;}
+  session={id:user.id,name:user.name,email:user.email,role:user.role};sessionStorage.setItem('vp_session',JSON.stringify(session));role=user.role;roleText.textContent=roles[role];closeM();render();toast('Đăng nhập thành công: '+roles[role]);
+}
+function logout(){
+  session=null;role=null;sessionStorage.removeItem('vp_session');roleText.textContent='Chưa đăng nhập';loginModal(true);toast('Đã đăng xuất');
 }
 
 function settings(){document.getElementById('settings').innerHTML=`<div class="section"><h2>⚙️ Cài đặt & dữ liệu</h2></div><div class="grid two"><div class="card"><h3>👤 Hồ sơ</h3><form onsubmit="saveSet(event)">${field('Tên hiển thị','name',db.settings.name)}${field('Năm học','year',db.settings.year)}<button class="btn primary">Lưu</button></form></div><div class="card"><h3>💾 Dữ liệu</h3><div class="actions"><button class="btn soft" onclick="exportJSON()">📤 Backup JSON</button><button class="btn gray" onclick="importJSON()">📥 Restore</button><button class="btn mint" onclick="templateX()">📄 Mẫu Excel</button><button class="btn primary" onclick="exportX()">📊 Xuất Excel</button><button class="btn red" onclick="resetData()">♻️ Reset</button></div></div></div><div class="card" style="margin-top:14px"><h3>📲 Cài app</h3><p>PWA chạy tốt trên điện thoại. Android/Chrome: chọn Cài đặt ứng dụng. iPhone/iPad: Safari → Chia sẻ → Thêm vào Màn hình chính.</p><button class="btn primary" onclick="install()">📲 Cài VietPath</button></div>`}
 function saveSet(e){e.preventDefault();let f=new FormData(e.target);db.settings.name=f.get('name');db.settings.year=f.get('year');save();render();toast('Đã lưu')}
-function roleModal(){modal('👤 Chọn vai trò',`<div class="rolegrid">${Object.entries(roles).map(([k,v])=>`<button class="rolecard ${role===k?'active':''}" onclick="setRole('${k}')"><div class="roleicon">${k==='teacher'?'👩‍🏫':k==='tutor'?'👨‍🏫':k==='parent'?'👨‍👩‍👧':'👧'}</div><b>${v}</b><div class="muted">${k==='tutor'?'Quản lý học sinh, buổi học, học phí':k==='teacher'?'Quản lý lớp và dạy học':k==='parent'?'Theo dõi con':'Học và làm bài'}</div></button>`).join('')}</div>`)}function setRole(r){role=r;localStorage.setItem('vp_role',r);roleText.textContent=roles[r];closeM();toast('Vai trò: '+roles[r])}
+function roleModal(){if(!role){loginModal(true);return;}modal('👤 Vai trò hiện tại',`<div class="rolegrid"><div class="rolecard active"><div class="roleicon">${role==='teacher'?'👩‍🏫':role==='tutor'?'👨‍🏫':role==='parent'?'👨‍👩‍👧':'👧'}</div><b>${roles[role]}</b><div class="muted">${session?.email||''}</div></div></div><p class="muted" style="margin-top:12px">Muốn đổi vai trò, hãy bấm Đăng xuất rồi đăng nhập bằng tài khoản khác.</p>`)}function setRole(r){if(!r)return;role=r;session={...(session||{}),role:r};sessionStorage.setItem('vp_session',JSON.stringify(session));roleText.textContent=roles[r];closeM();render();toast('Vai trò: '+roles[r])}
 function del(c,id){if(confirm('Xóa mục này?')){db[c]=db[c].filter(x=>x.id!==id);save();render();toast('Đã xóa')}}function exportJSON(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.download='vietpath-backup.json';a.click()}function importJSON(){let i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=()=>{let r=new FileReader;r.onload=()=>{try{db=JSON.parse(r.result);save();render();toast('Đã khôi phục')}catch{alert('JSON không hợp lệ')}};r.readAsText(i.files[0])};i.click()}function resetData(){if(confirm('Xóa dữ liệu hiện tại và tạo dữ liệu mẫu?')){db=seed();save();render();toast('Đã reset')}}
 function exportX(){if(!window.XLSX)return alert('Cần Internet để dùng Excel.');let wb=XLSX.utils.book_new();let hs=db.students.map(s=>({'Họ tên':s.name,'Khối':s.grade,'Lớp':s.classIds.map(i=>cl(i)?.name||'').join(', '),'SĐT':s.phone,'Phụ huynh':s.parent,'Điểm':pts(s.id),'Chuyên cần':ar(s.id)}));let dd=db.attendance.map(a=>({'Ngày':a.date,'Học sinh':stu(a.studentId)?.name||'','Lớp':cl(a.classId)?.name||'','Trạng thái':a.status,'Ghi chú':a.note}));let hp=db.sessions.map(s=>({'Ngày':s.date,'Học sinh':stu(s.studentId)?.name||'','Nội dung':s.topic,'Phút':s.minutes,'Học phí':s.fee,'Đã thu':s.paid,'Còn':s.fee-s.paid}));[['Học sinh',hs],['Điểm danh',dd],['Học phí',hp]].forEach(([n,d])=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),n));XLSX.writeFile(wb,'VietPath.xlsx')}
 function importX(){if(!window.XLSX)return alert('Cần Internet để dùng Excel.');let i=document.createElement('input');i.type='file';i.accept='.xlsx,.xls,.csv';i.onchange=()=>{let r=new FileReader;r.onload=e=>{let wb=XLSX.read(e.target.result,{type:'array'}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]),n=0;rows.forEach(x=>{let name=x['Họ tên']||x['Tên'];if(!name)return;let cn=x['Lớp']||'',c=db.classes.find(c=>c.name===cn);if(cn&&!c){c={id:uid(),name:cn,grade:String(x['Khối']||''),year:x['Năm học']||db.settings.year,teacher:db.settings.name,desc:'',studentIds:[]};db.classes.push(c)}let s={id:uid(),name:String(name),grade:String(x['Khối']||c?.grade||''),avatar:avs[n%avs.length],phone:String(x['SĐT']||''),parent:String(x['Phụ huynh']||''),note:String(x['Ghi chú']||''),classIds:c?[c.id]:[]};db.students.push(s);if(c)c.studentIds.push(s.id);n++});save();render();toast('Đã nhập '+n+' học sinh')};r.readAsArrayBuffer(i.files[0])};i.click()}
 function templateX(){let wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet([{'Họ tên':'Nguyễn Văn A','Khối':'4','Lớp':'4A1','Năm học':'2026–2027','SĐT':'','Phụ huynh':'','Ghi chú':''}]);XLSX.utils.book_append_sheet(wb,ws,'Học sinh');XLSX.writeFile(wb,'Mau-VietPath.xlsx')}
-function render(){ensureExtras();roleText.textContent=roles[role];home();classes();students();materials();assignments();attendance();pointsPage();badges();stats();calendar();tools();practice();tutor();messages();notifications();settings()}ensureExtras();render();go('home');
+function render(){ensureExtras();roleText.textContent=role?roles[role]:'Chưa đăng nhập';home();classes();students();materials();assignments();attendance();pointsPage();badges();stats();calendar();tools();practice();tutor();messages();notifications();settings()}ensureExtras();render();go('home');if(!role)setTimeout(()=>loginModal(true),250);
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferInstall=e;install.style.display='inline-block'});async function install(){if(deferInstall){deferInstall.prompt();deferInstall=null}else toast('Hãy mở menu trình duyệt và chọn Cài đặt ứng dụng')}if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
