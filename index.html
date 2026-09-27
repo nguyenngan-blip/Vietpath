@@ -63,12 +63,16 @@ function ensureExtras(){
     {id:uid(),title:'Hạn nộp bài đọc hiểu',date:today(),time:'20:00',studentId:'',type:'assignment'}
   ];
   db.submissions=db.submissions||[];
-  db.users=db.users||[
-    {id:'teacher01',name:'Ngân Nguyễn',email:'teacher@vietpath.vn',role:'teacher'},
-    {id:'tutor01',name:'Gia sư VietPath',email:'tutor@vietpath.vn',role:'tutor'},
-    {id:'parent01',name:'Phụ huynh',email:'parent@vietpath.vn',role:'parent'},
-    {id:'student01',name:'Học sinh',email:'student@vietpath.vn',role:'student'}
-  ];
+ db.users=db.users||[
+  {id:'teacher01',name:'Ngân Nguyễn',email:'teacher@vietpath.vn',password:'123456',role:'teacher'},
+  {id:'tutor01',name:'Gia sư VietPath',email:'tutor@vietpath.vn',password:'123456',role:'tutor'},
+  {id:'parent01',name:'Phụ huynh',email:'parent@vietpath.vn',password:'123456',role:'parent'},
+  {id:'student01',name:'Học sinh',email:'student@vietpath.vn',password:'123456',role:'student'}
+];
+
+db.users.forEach(u=>{
+  if(!u.password) u.password='123456';
+});
   db.settings=db.settings||{};
   save();
 }
@@ -220,23 +224,51 @@ function saveMessage(e){
 }
 function loginModal(force=false){
   const current=session?.email||'';
-  modal('🔐 Đăng nhập VietPath',`<form onsubmit="loginDemo(event)"><div class="notice"><b>Đây là bản đăng nhập trên thiết bị.</b><br>Chọn tài khoản demo để thử đúng giao diện của từng vai trò. Dữ liệu vẫn lưu trên thiết bị này; khi nối Firebase/Supabase mới có tài khoản thật và đồng bộ nhiều thiết bị.</div><div class="form">${field('Email','email',current||'')} ${field('Mật khẩu','password','')}<div class="field full"><label>Chọn nhanh vai trò</label><select id="loginRole" onchange="fillDemoAccount(this.value)"><option value="">-- Chọn tài khoản --</option><option value="teacher">👩‍🏫 Giáo viên — teacher@vietpath.vn</option><option value="tutor">👨‍🏫 Gia sư — tutor@vietpath.vn</option><option value="parent">👨‍👩‍👧 Phụ huynh — parent@vietpath.vn</option><option value="student">👧 Học sinh — student@vietpath.vn</option></select></div></div><p class="muted">Mật khẩu demo cho cả 4 tài khoản: <b>123456</b></p><div class="modal-foot">${force?'':'<button type="button" class="btn gray" onclick="closeM()">Đóng</button>'}<button class="btn primary">Đăng nhập</button></div></form>`);
-}
-function fillDemoAccount(r){
-  const email={teacher:'teacher@vietpath.vn',tutor:'tutor@vietpath.vn',parent:'parent@vietpath.vn',student:'student@vietpath.vn'}[r]||'';
-  const inputs=document.querySelectorAll('#modal input');if(inputs[0])inputs[0].value=email;if(inputs[1])inputs[1].value=email?'123456':'';
+
+  modal('🔐 Đăng nhập VietPath',`
+    <form onsubmit="loginDemo(event)">
+      <div class="notice">
+        <b>🔐 Đăng nhập tài khoản</b><br>
+        Nhập email và mật khẩu bạn đã đăng ký.
+      </div>
+
+      <div class="form">
+        ${field('Email','email',current)}
+        ${field('Mật khẩu','password','')}
+      </div>
+
+      <p class="muted">
+        Chưa có tài khoản?
+        <button type="button" class="btn soft small" onclick="registerModal()">
+          Đăng ký ngay
+        </button>
+      </p>
+
+      <div class="modal-foot">
+        ${force?'':'<button type="button" class="btn gray" onclick="closeM()">Đóng</button>'}
+        <button class="btn primary">🔐 Đăng nhập</button>
+      </div>
+    </form>
+  `);
 }
 function loginDemo(e){
   e.preventDefault();
 
-  let f=new FormData(e.target);
-  let email=String(f.get('email')||'').trim().toLowerCase();
-  let password=String(f.get('password')||'');
+  const f=new FormData(e.target);
+  const email=String(f.get('email')||'').trim().toLowerCase();
+  const password=String(f.get('password')||'');
 
-  const user=db.users.find(u=>u.email.toLowerCase()===email);
+  const user=db.users.find(u=>
+    String(u.email||'').toLowerCase()===email
+  );
 
-  if(!user||password!=='123456'){
-    alert('Email hoặc mật khẩu chưa đúng. Hãy chọn một tài khoản demo hoặc dùng mật khẩu 123456.');
+  if(!user){
+    alert('Tài khoản chưa tồn tại. Hãy đăng ký tài khoản trước.');
+    return;
+  }
+
+  if(user.password!==password){
+    alert('Mật khẩu không đúng.');
     return;
   }
 
@@ -248,16 +280,121 @@ function loginDemo(e){
   };
 
   sessionStorage.setItem('vp_session',JSON.stringify(session));
+
   role=user.role;
 
   document.querySelector('.app').classList.add('ready');
 
   roleText.textContent=roles[role];
+
   closeM();
   render();
-  toast('Đăng nhập thành công: '+roles[role]);
+  go('home');
+
+  toast('Đăng nhập thành công 👋');
 }
-function logout(){
+
+function registerModal(){
+  modal('✨ Tạo tài khoản VietPath',`
+    <form onsubmit="registerAccount(event)">
+      <div class="form">
+        ${field('Họ và tên','name','Nguyễn Văn A')}
+        ${field('Email','email','example@gmail.com')}
+        ${field('Mật khẩu','password','')}
+        ${field('Nhập lại mật khẩu','password2','')}
+
+        <div class="field full">
+          <label>Bạn là</label>
+          <select name="role" required>
+            <option value="">-- Chọn vai trò --</option>
+            <option value="teacher">👩‍🏫 Giáo viên</option>
+            <option value="tutor">👨‍🏫 Gia sư</option>
+            <option value="parent">👨‍👩‍👧 Phụ huynh</option>
+            <option value="student">👧 Học sinh</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" class="btn gray" onclick="loginModal(true)">
+          ← Quay lại đăng nhập
+        </button>
+
+        <button class="btn primary">
+          ✨ Tạo tài khoản
+        </button>
+      </div>
+    </form>
+  `);
+}
+
+function registerAccount(e){
+  e.preventDefault();
+
+  const f=new FormData(e.target);
+
+  const name=String(f.get('name')||'').trim();
+  const email=String(f.get('email')||'').trim().toLowerCase();
+  const password=String(f.get('password')||'');
+  const password2=String(f.get('password2')||'');
+  const userRole=String(f.get('role')||'');
+
+  if(!name){
+    alert('Vui lòng nhập họ và tên.');
+    return;
+  }
+
+  if(!email){
+    alert('Vui lòng nhập email.');
+    return;
+  }
+
+  if(password.length<6){
+    alert('Mật khẩu phải có ít nhất 6 ký tự.');
+    return;
+  }
+
+  if(password!==password2){
+    alert('Mật khẩu nhập lại không khớp.');
+    return;
+  }
+
+  if(!userRole){
+    alert('Vui lòng chọn vai trò.');
+    return;
+  }
+
+  const exists=db.users.some(u=>
+    String(u.email||'').toLowerCase()===email
+  );
+
+  if(exists){
+    alert('Email này đã được đăng ký. Hãy đăng nhập.');
+    return;
+  }
+
+  const newUser={
+    id:uid(),
+    name,
+    email,
+    password,
+    role:userRole,
+    createdAt:today()
+  };
+
+  db.users.push(newUser);
+
+  save();
+
+  closeM();
+
+  alert('🎉 Đăng ký thành công! Bây giờ hãy đăng nhập bằng tài khoản của bạn.');
+
+  loginModal(true);
+}
+  }
+
+  function logout(){
   session=null;
   role=null;
   sessionStorage.removeItem('vp_session');
