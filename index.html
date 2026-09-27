@@ -50,28 +50,6 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7),toda
 function seed(){let c={id:uid(),name:'4A1',grade:'4',year:'2026–2027',teacher:'Ngân Nguyễn',desc:'Lớp Tiếng Việt vui vẻ',studentIds:[]};let names=['Minh Anh','Hoàng Nam','Lan Anh','Đức Minh','Khánh Linh'];let ss=names.map((n,i)=>({id:uid(),name:n,grade:'4',avatar:avs[i],phone:'',parent:'',note:'',classIds:[c.id]}));c.studentIds=ss.map(x=>x.id);return{classes:[c],students:ss,materials:[{id:uid(),title:'Phiếu đọc hiểu Người mẹ',cat:'Đọc hiểu',type:'internal',content:'Đọc văn bản và trả lời câu hỏi.',url:'',fileName:'',fileData:'',size:0},{id:uid(),title:'Video đọc diễn cảm',cat:'Đọc hiểu',type:'youtube',content:'',url:'https://www.youtube.com/',fileName:'',fileData:'',size:0}],assignments:[],attendance:ss.map(s=>({id:uid(),classId:c.id,studentId:s.id,date:today(),status:'present',note:''})),points:ss.map((s,i)=>({id:uid(),classId:c.id,studentId:s.id,n:i?3:5,reason:'Khởi động tốt',type:'positive'})),badges:[],sessions:[{id:uid(),date:today(),studentId:ss[0].id,minutes:90,fee:150000,paid:150000,topic:'Đọc hiểu',note:'Buổi mẫu',classId:c.id}],comments:[],settings:{name:'Ngân Nguyễn',year:'2026–2027'}}}
 let db;try{db=JSON.parse(localStorage.getItem(K))||seed()}catch(e){db=seed()}function save(){localStorage.setItem(K,JSON.stringify(db))}ensureExtras();
 
-function ensureExtras(){
-  db.notifications=db.notifications||[
-    {id:uid(),title:'Chào mừng đến VietPath',body:'Bạn có thể quản lý lớp, học liệu, bài tập và tiến độ tại đây.',date:today(),read:false,type:'info'},
-    {id:uid(),title:'Gợi ý',body:'Hãy thêm học liệu hoặc giao một bài tập đầu tiên.',date:today(),read:false,type:'task'}
-  ];
-  db.messages=db.messages||[
-    {id:uid(),from:'Giáo viên',to:'Phụ huynh',text:'Chào phụ huynh, VietPath đã sẵn sàng để theo dõi việc học.',date:today(),read:false}
-  ];
-  db.events=db.events||[
-    {id:uid(),title:'Buổi học Tiếng Việt',date:today(),time:'19:00',studentId:db.students?.[0]?.id||'',type:'tutor'},
-    {id:uid(),title:'Hạn nộp bài đọc hiểu',date:today(),time:'20:00',studentId:'',type:'assignment'}
-  ];
-  db.submissions=db.submissions||[];
-  db.users=db.users||[
-    {id:'teacher01',name:'Ngân Nguyễn',email:'teacher@vietpath.vn',role:'teacher'},
-    {id:'tutor01',name:'Gia sư VietPath',email:'tutor@vietpath.vn',role:'tutor'},
-    {id:'parent01',name:'Phụ huynh',email:'parent@vietpath.vn',role:'parent'},
-    {id:'student01',name:'Học sinh',email:'student@vietpath.vn',role:'student'}
-  ];
-  db.settings=db.settings||{};
-  save();
-}
 
 function ensureExtras(){
   db.notifications=db.notifications||[
