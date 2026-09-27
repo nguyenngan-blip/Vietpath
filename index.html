@@ -9,7 +9,7 @@
 <style>
 :root{--sky:#1599e8;--sky2:#087dcc;--light:#eff9ff;--line:#dbeaf3;--text:#12344d;--muted:#667d8d;--mint:#27c59a;--yellow:#ffbd2e;--pink:#ff5f9e;--red:#ef5b68;--purple:#7c5cff}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial;color:var(--text);background:linear-gradient(135deg,#eff9ff,#fff)}
-button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh;visibility:hidden}.app.ready{visibility:visible}
 .sidebar{width:255px;position:fixed;inset:0 auto 0 0;background:linear-gradient(180deg,#075d99,#1599e8);color:#fff;padding:16px 12px;overflow:auto;z-index:20}.brand{font-size:23px;font-weight:900;display:flex;gap:10px;align-items:center;padding:8px}.logo{width:44px;height:44px;background:white;color:var(--sky);border-radius:14px;display:grid;place-items:center}.role{background:#ffffff22;padding:10px;border-radius:12px;margin:8px 6px 12px;font-size:12px}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#fff;text-align:left;padding:10px;border-radius:11px;font-weight:700}.nav button:hover,.nav button.active{background:#ffffff25}.main{margin-left:255px;width:calc(100% - 255px)}.top{height:70px;position:sticky;top:0;background:#ffffffdd;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:0 22px;z-index:10}.container{padding:22px;max-width:1500px;margin:auto}.page{display:none}.page.active{display:block}
 .hero,.card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 28px #196b9612}.hero{padding:25px;background:linear-gradient(135deg,#d9f2ff,#fff);position:relative;overflow:hidden}.hero h1{margin:0 0 6px}.sun{position:absolute;right:25px;bottom:-30px;font-size:100px;opacity:.18}.grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(5,1fr);margin:16px 0}.cards{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr 1fr}.card{padding:17px}.stat{display:flex;gap:12px;align-items:center}.ico{width:48px;height:48px;border-radius:14px;background:var(--light);display:grid;place-items:center;font-size:24px}.stat strong{display:block;font-size:23px}.muted{color:var(--muted);font-size:13px}.section{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 12px}.actions,.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.btn{border:0;border-radius:11px;padding:10px 13px;font-weight:800}.primary{background:var(--sky2);color:#fff}.soft{background:#d9f2ff;color:#075d99}.mint{background:#ddf8f0;color:#08765b}.yellow{background:#fff1c7;color:#7d5a00}.pink{background:#ffe0ed;color:#a72d5c}.red{background:#ffe1e4;color:#a72b37}.gray{background:#edf3f6;color:#4b6170}.small{padding:7px 10px;font-size:12px}.search{position:relative;flex:1;min-width:220px}.search span{position:absolute;left:12px;top:9px}.search input{width:100%;padding:10px 12px 10px 37px;border:1px solid var(--line);border-radius:11px}.toolbar select,.field input,.field select,.field textarea{padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}.table{overflow:auto;border:1px solid var(--line);border-radius:13px;background:#fff}.table table{width:100%;border-collapse:collapse}.table th,.table td{padding:10px;border-bottom:1px solid #edf3f7;text-align:left;white-space:nowrap}.table th{background:#f1f9fd;font-size:12px}.list{display:grid;gap:9px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);padding:11px;border-radius:13px}.person{display:flex;align-items:center;gap:10px}.avatar{width:42px;height:42px;border-radius:13px;background:#d9f2ff;display:grid;place-items:center;font-size:23px}.tag{display:inline-block;background:#d9f2ff;color:#075d99;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;margin:2px}.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0}.mini div{background:#eff9ff;padding:8px;text-align:center;border-radius:9px}.modal-bg{display:none;position:fixed;inset:0;background:#082d4099;z-index:100;place-items:center;padding:16px}.modal-bg.open{display:grid}.modal{width:min(820px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:20px}.modal-head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.modal-body{padding:20px}.modal-foot{padding:15px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}.close{border:0;background:#edf3f6;border-radius:9px;width:34px;height:34px;font-size:20px}.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:800}.field textarea{min-height:90px;resize:vertical}.filebox{padding:18px;border:2px dashed #b8e7ff;border-radius:13px;background:#eff9ff}.empty{text-align:center;padding:30px;color:var(--muted);border:1px dashed #b8e7ff;border-radius:13px}.rolegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.rolecard{border:2px solid var(--line);border-radius:14px;padding:14px;background:#fff;text-align:center}.rolecard.active{border-color:var(--sky);background:#eff9ff}.roleicon{font-size:34px}.timer{display:grid;place-items:center;background:#e5f7ff;border-radius:18px;padding:25px}.clock{font-size:58px;font-weight:900;color:#075d99}.toast{display:none;position:fixed;right:16px;bottom:16px;background:#12344d;color:#fff;padding:12px 15px;border-radius:11px;z-index:200}.toast.show{display:block}.mobile{display:none;border:0;background:#d9f2ff;padding:9px;border-radius:9px}
 @media(max-width:1050px){.stats{grid-template-columns:repeat(3,1fr)}.cards{grid-template-columns:repeat(2,1fr)}.rolegrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}.main{margin-left:0;width:100%}.mobile{display:block}.container{padding:13px}.stats,.cards,.two{grid-template-columns:1fr}.form{grid-template-columns:1fr}.field.full{grid-column:auto}.top{padding:0 13px}}
@@ -73,36 +73,21 @@ function ensureExtras(){
   save();
 }
 
-function ensureExtras(){
-  db.notifications=db.notifications||[
-    {id:uid(),title:'Chào mừng đến VietPath',body:'Bạn có thể quản lý lớp, học liệu, bài tập và tiến độ tại đây.',date:today(),read:false,type:'info'},
-    {id:uid(),title:'Gợi ý',body:'Hãy thêm học liệu hoặc giao một bài tập đầu tiên.',date:today(),read:false,type:'task'}
-  ];
-  db.messages=db.messages||[
-    {id:uid(),from:'Giáo viên',to:'Phụ huynh',text:'Chào phụ huynh, VietPath đã sẵn sàng để theo dõi việc học.',date:today(),read:false}
-  ];
-  db.events=db.events||[
-    {id:uid(),title:'Buổi học Tiếng Việt',date:today(),time:'19:00',studentId:db.students?.[0]?.id||'',type:'tutor'},
-    {id:uid(),title:'Hạn nộp bài đọc hiểu',date:today(),time:'20:00',studentId:'',type:'assignment'}
-  ];
-  db.submissions=db.submissions||[];
-  db.users=db.users||[
-    {id:'teacher01',name:'Ngân Nguyễn',email:'teacher@vietpath.vn',role:'teacher'},
-    {id:'tutor01',name:'Gia sư VietPath',email:'tutor@vietpath.vn',role:'tutor'},
-    {id:'parent01',name:'Phụ huynh',email:'parent@vietpath.vn',role:'parent'},
-    {id:'student01',name:'Học sinh',email:'student@vietpath.vn',role:'student'}
-  ];
-  db.settings=db.settings||{};
-  save();
-}
-
 const stu=id=>db.students.find(x=>x.id===id),cl=id=>db.classes.find(x=>x.id===id),pts=id=>db.points.filter(x=>x.studentId===id).reduce((a,x)=>a+(x.type==='negative'?-x.n:x.n),0),cs=c=>c?db.students.filter(s=>c.studentIds.includes(s.id)):[],ar=id=>{let a=db.attendance.filter(x=>x.studentId===id);return a.length?Math.round(a.filter(x=>x.status==='present').length/a.length*100):0};save();
 function toast(x){let t=document.getElementById('toast');t.textContent=x;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
 function go(p){page=p;document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(p).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.p===p));document.getElementById('title').textContent=document.querySelector(`[data-p="${p}"]`)?.textContent.replace(/^\\S+\\s*/,'')||'VietPath';if(innerWidth<720)side.classList.remove('open')}
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>go(b.dataset.p));mobile.onclick=()=>side.classList.toggle('open');
 function st(i,n,l){return`<div class="card stat"><div class="ico">${i}</div><div><strong>${n}</strong><span class="muted">${l}</span></div></div>`}
 function modal(t,b){document.getElementById('modal').innerHTML=`<div class="modal-head"><h3 style="margin:0">${t}</h3><button class="close" onclick="closeM()">×</button></div><div class="modal-body">${b}</div>`;mb.classList.add('open')}function closeM(){mb.classList.remove('open')}mb.onclick=e=>{if(e.target===mb)closeM()}
-function field(l,n,v='',full=false,ta=false){return`<div class="field ${full?'full':''}"><label>${l}</label>${ta?`<textarea name="${n}">${esc(v)}</textarea>`:`<input name="${n}" value="${esc(v)}">`}</div>`}
+function field(l,n,v='',full=false,ta=false){
+  return `<div class="field ${full?'full':''}">
+    <label>${l}</label>
+    ${ta
+      ? `<textarea name="${n}">${esc(v)}</textarea>`
+      : `<input type="${n==='password'?'password':'text'}" name="${n}" value="${esc(v)}">`
+    }
+  </div>`
+}
 function classCard(c){let s=cs(c),p=s.reduce((a,x)=>a+pts(x.id),0);return`<div class="card"><h3>🌤️ ${esc(c.name)}</h3><span class="tag">Khối ${c.grade}</span><span class="tag">${esc(c.year)}</span><p class="muted">${esc(c.desc||'')}</p><div class="mini"><div><b>${s.length}</b>HS</div><div><b>${p}</b>⭐</div><div><b>${db.assignments.filter(a=>a.classId===c.id).length}</b>bài</div></div><button class="btn primary small" onclick="openClass('${c.id}')">Mở lớp →</button></div>`}
 function home(){let fee=db.sessions.reduce((a,x)=>a+x.fee,0),paid=db.sessions.reduce((a,x)=>a+x.paid,0);document.getElementById('home').innerHTML=`<div class="hero"><div class="sun">☀️</div><h1>Xin chào, ${esc(db.settings.name)}! 👋</h1><p>Quản lý dạy và học Tiếng Việt cho giáo viên, gia sư, phụ huynh và học sinh.</p></div><div class="grid stats">${st('👩‍🎓',db.students.length,'Học sinh')}${st('🏫',db.classes.length,'Lớp')}${st('📝',db.assignments.length,'Bài tập')}${st('📅',db.sessions.length,'Buổi học')}${st('💰',money(fee-paid),'Còn thu')}</div><div class="card"><h3>⚡ Thao tác nhanh</h3><div class="actions"><button class="btn primary" onclick="studentM()">➕ Học sinh</button><button class="btn soft" onclick="materialM()">📚 Học liệu</button><button class="btn mint" onclick="assignmentM()">📝 Giao bài</button><button class="btn yellow" onclick="sessionM()">💰 Buổi học</button></div></div><div class="section"><h2>🏫 Lớp học</h2><button class="btn soft small" onclick="go('classes')">Xem tất cả →</button></div><div class="grid cards">${db.classes.map(classCard).join('')}</div>`}
 function classes(){let q=document.getElementById('cq')?.value?.toLowerCase()||'',ls=db.classes.filter(c=>(c.name+c.grade+c.teacher).toLowerCase().includes(q));document.getElementById('classes').innerHTML=`<div class="section"><div><h2>🏫 Lớp học</h2><span class="muted">Quản lý lớp kiểu ClassDojo.</span></div><button class="btn primary" onclick="classM()">➕ Tạo lớp</button></div><div class="toolbar"><div class="search"><span>🔎</span><input id="cq" value="${esc(q)}" placeholder="Tìm lớp..." oninput="classes()"></div></div><div class="grid cards">${ls.map(classCard).join('')||'<div class="empty">Không tìm thấy.</div>'}</div>`}
@@ -242,13 +227,45 @@ function fillDemoAccount(r){
   const inputs=document.querySelectorAll('#modal input');if(inputs[0])inputs[0].value=email;if(inputs[1])inputs[1].value=email?'123456':'';
 }
 function loginDemo(e){
-  e.preventDefault();let f=new FormData(e.target),email=String(f.get('email')||'').trim().toLowerCase(),password=String(f.get('password')||'');
+  e.preventDefault();
+
+  let f=new FormData(e.target);
+  let email=String(f.get('email')||'').trim().toLowerCase();
+  let password=String(f.get('password')||'');
+
   const user=db.users.find(u=>u.email.toLowerCase()===email);
-  if(!user||password!=='123456'){alert('Email hoặc mật khẩu chưa đúng. Hãy chọn một tài khoản demo hoặc dùng mật khẩu 123456.');return;}
-  session={id:user.id,name:user.name,email:user.email,role:user.role};sessionStorage.setItem('vp_session',JSON.stringify(session));role=user.role;roleText.textContent=roles[role];closeM();render();toast('Đăng nhập thành công: '+roles[role]);
+
+  if(!user||password!=='123456'){
+    alert('Email hoặc mật khẩu chưa đúng. Hãy chọn một tài khoản demo hoặc dùng mật khẩu 123456.');
+    return;
+  }
+
+  session={
+    id:user.id,
+    name:user.name,
+    email:user.email,
+    role:user.role
+  };
+
+  sessionStorage.setItem('vp_session',JSON.stringify(session));
+  role=user.role;
+
+  document.querySelector('.app').classList.add('ready');
+
+  roleText.textContent=roles[role];
+  closeM();
+  render();
+  toast('Đăng nhập thành công: '+roles[role]);
 }
 function logout(){
-  session=null;role=null;sessionStorage.removeItem('vp_session');roleText.textContent='Chưa đăng nhập';loginModal(true);toast('Đã đăng xuất');
+  session=null;
+  role=null;
+  sessionStorage.removeItem('vp_session');
+
+  document.querySelector('.app').classList.remove('ready');
+
+  roleText.textContent='Chưa đăng nhập';
+  loginModal(true);
 }
 
 function settings(){document.getElementById('settings').innerHTML=`<div class="section"><h2>⚙️ Cài đặt & dữ liệu</h2></div><div class="grid two"><div class="card"><h3>👤 Hồ sơ</h3><form onsubmit="saveSet(event)">${field('Tên hiển thị','name',db.settings.name)}${field('Năm học','year',db.settings.year)}<button class="btn primary">Lưu</button></form></div><div class="card"><h3>💾 Dữ liệu</h3><div class="actions"><button class="btn soft" onclick="exportJSON()">📤 Backup JSON</button><button class="btn gray" onclick="importJSON()">📥 Restore</button><button class="btn mint" onclick="templateX()">📄 Mẫu Excel</button><button class="btn primary" onclick="exportX()">📊 Xuất Excel</button><button class="btn red" onclick="resetData()">♻️ Reset</button></div></div></div><div class="card" style="margin-top:14px"><h3>📲 Cài app</h3><p>PWA chạy tốt trên điện thoại. Android/Chrome: chọn Cài đặt ứng dụng. iPhone/iPad: Safari → Chia sẻ → Thêm vào Màn hình chính.</p><button class="btn primary" onclick="install()">📲 Cài VietPath</button></div>`}
@@ -258,7 +275,38 @@ function del(c,id){if(confirm('Xóa mục này?')){db[c]=db[c].filter(x=>x.id!==
 function exportX(){if(!window.XLSX)return alert('Cần Internet để dùng Excel.');let wb=XLSX.utils.book_new();let hs=db.students.map(s=>({'Họ tên':s.name,'Khối':s.grade,'Lớp':s.classIds.map(i=>cl(i)?.name||'').join(', '),'SĐT':s.phone,'Phụ huynh':s.parent,'Điểm':pts(s.id),'Chuyên cần':ar(s.id)}));let dd=db.attendance.map(a=>({'Ngày':a.date,'Học sinh':stu(a.studentId)?.name||'','Lớp':cl(a.classId)?.name||'','Trạng thái':a.status,'Ghi chú':a.note}));let hp=db.sessions.map(s=>({'Ngày':s.date,'Học sinh':stu(s.studentId)?.name||'','Nội dung':s.topic,'Phút':s.minutes,'Học phí':s.fee,'Đã thu':s.paid,'Còn':s.fee-s.paid}));[['Học sinh',hs],['Điểm danh',dd],['Học phí',hp]].forEach(([n,d])=>XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),n));XLSX.writeFile(wb,'VietPath.xlsx')}
 function importX(){if(!window.XLSX)return alert('Cần Internet để dùng Excel.');let i=document.createElement('input');i.type='file';i.accept='.xlsx,.xls,.csv';i.onchange=()=>{let r=new FileReader;r.onload=e=>{let wb=XLSX.read(e.target.result,{type:'array'}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]),n=0;rows.forEach(x=>{let name=x['Họ tên']||x['Tên'];if(!name)return;let cn=x['Lớp']||'',c=db.classes.find(c=>c.name===cn);if(cn&&!c){c={id:uid(),name:cn,grade:String(x['Khối']||''),year:x['Năm học']||db.settings.year,teacher:db.settings.name,desc:'',studentIds:[]};db.classes.push(c)}let s={id:uid(),name:String(name),grade:String(x['Khối']||c?.grade||''),avatar:avs[n%avs.length],phone:String(x['SĐT']||''),parent:String(x['Phụ huynh']||''),note:String(x['Ghi chú']||''),classIds:c?[c.id]:[]};db.students.push(s);if(c)c.studentIds.push(s.id);n++});save();render();toast('Đã nhập '+n+' học sinh')};r.readAsArrayBuffer(i.files[0])};i.click()}
 function templateX(){let wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet([{'Họ tên':'Nguyễn Văn A','Khối':'4','Lớp':'4A1','Năm học':'2026–2027','SĐT':'','Phụ huynh':'','Ghi chú':''}]);XLSX.utils.book_append_sheet(wb,ws,'Học sinh');XLSX.writeFile(wb,'Mau-VietPath.xlsx')}
-function render(){ensureExtras();roleText.textContent=role?roles[role]:'Chưa đăng nhập';home();classes();students();materials();assignments();attendance();pointsPage();badges();stats();calendar();tools();practice();tutor();messages();notifications();settings()}ensureExtras();render();go('home');if(!role)setTimeout(()=>loginModal(true),250);
+function render(){
+  ensureExtras();
+  roleText.textContent=role?roles[role]:'Chưa đăng nhập';
+
+  home();
+  classes();
+  students();
+  materials();
+  assignments();
+  attendance();
+  pointsPage();
+  badges();
+  stats();
+  calendar();
+  tools();
+  practice();
+  tutor();
+  messages();
+  notifications();
+  settings();
+}
+
+ensureExtras();
+
+if(role){
+  document.querySelector('.app').classList.add('ready');
+  render();
+  go('home');
+}else{
+  render();
+  setTimeout(()=>loginModal(true),250);
+}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferInstall=e;install.style.display='inline-block'});async function install(){if(deferInstall){deferInstall.prompt();deferInstall=null}else toast('Hãy mở menu trình duyệt và chọn Cài đặt ứng dụng')}if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
